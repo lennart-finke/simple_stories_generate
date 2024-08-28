@@ -27,6 +27,7 @@ def get_batch_dataset(num_completions, model):
 
     return lines
 
+
 def main(num_completions: int, model = "gpt-4o-mini"):
     if not os.path.exists("data"):
         os.makedirs("data")
