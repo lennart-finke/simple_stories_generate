@@ -10,18 +10,20 @@ import concurrent.futures
 from tqdm import tqdm
 from datetime import datetime
 
+LANGUAGE = "ja"
+
 MAX_STORIES_PER_COMPLETION = 40
-END_STRING = "THE END."
+END_STRING = {"en": "THE END.", "ja": "終わり。"}["ja"]
 
 class RateLimitException(Exception):
     pass
 
 
-themes = {"en": ["Friendship","Courage","Coming of age", "Kindness","Adventure","Imagination","Family","Perseverance","Curiosity","Honesty","Romance","Teamwork","Responsibility","Strategy","Magic","Discovery","Betrayal","Deception","Generosity","Creativity","Self-Acceptance","Helping Others","Hardship","Agency","Power","Revenge","Independence","Problem-Solving","Resourcefulness","Long-Term Thinking","Optimism","Humor","Love","The Five Senses","Tradition","Innovation","Hope","Dreams","Belonging","Travel","Overcoming","Trust","Morality","Happiness","Consciousness","Failure","Conflict","Cooperation","Growth","Loss","Celebration","Transformation","Scheming","Challenge","Planning","Wonder","Surprises","Conscience","Intelligence","Logic","Resilience"]}["en"]
-topics = {"en": ['talking animals', 'fantasy worlds', 'time travel', 'space exploration', 'mystical creatures', 'underwater adventures', 'dinosaurs', 'pirates', 'superheroes', 'fairy tales', 'outer space', 'hidden treasures', 'magical lands', 'enchanted forests', 'secret societies', 'robots and technology', 'sports', 'school life', 'holidays', 'cultural traditions', 'magical objects', 'lost civilizations', 'subterranean worlds', 'bygone eras', 'invisibility', 'giant creatures', 'miniature worlds', 'alien encounters', 'haunted places', 'shape-shifting', 'island adventures', 'unusual vehicles', 'undercover missions', 'dream worlds', 'virtual worlds', 'riddles', 'sibling rivalry', 'treasure hunts', 'snowy adventures', 'seasonal changes', 'mysterious maps', 'royal kingdoms', 'living objects', 'gardens', 'lost cities', 'the arts', 'the sky']}["en"]
-styles = {"en": ['whimsical', 'playful', 'epic', 'fairy tale-like', 'modern', 'classic', 'lyric', 'mythological', 'lighthearted', 'adventurous', 'heartwarming', 'humorous', 'mystical', 'action-packed', 'fable-like', 'surreal', 'philosophical', 'melancholic', 'noir', 'romantic', 'tragic', 'minimalist', 'suspenseful']}["en"]
-features = {"en": ["dialogue", "a moral lesson", "a twist ending", "foreshadowing", "irony", "inner monologue", "symbolism", "a MacGuffin", "a non-linear timeline", "a flashback", "a nested structure", "a story within a story", "multiple perspectives", "Checkhov's gun", "the fourth wall", "a cliffhanger", "an anti-hero", "juxtaposition", "climactic structure"]}["en"]
-grammars = {"en": ["present tense","past tense","future tense","progressive aspect","perfect aspect","passive voice","conditional mood","imperative mood","indicative mood","relative clauses","prepositional phrases","indirect speech","exclamative sentences","comparative forms","superlative forms","subordinate clauses","ellipsis","anaphora","cataphora","wh-questions","yes-no questions","gerunds","participle phrases","inverted sentences","non-finite clauses","determiners","quantifiers","adjective order","parallel structure","discourse markers","appositive phrases"]}["en"]
+themes = {"ja": ["友情","勇気","成人","親切","冒険","想像力","家族","忍耐","好奇心","正直","ロマンス","チームワーク","責任","戦略","魔法","発見","裏切り","欺瞞","寛大さ","創造性","自己受容","他者支援","困難","自立","権力","復讐","独立","問題解決","機転","長期的思考","楽観主義","ユーモア","愛","五感","伝統","革新","希望","夢","帰属意識","旅行","克服","信頼","道徳","幸福","意識","失敗","対立","協力","成長","喪失","祝福","変容","計略","挑戦","計画","驚き","不思議","良心","知性","論理","回復力"], "en": ["Friendship","Courage","Coming of age", "Kindness","Adventure","Imagination","Family","Perseverance","Curiosity","Honesty","Romance","Teamwork","Responsibility","Strategy","Magic","Discovery","Betrayal","Deception","Generosity","Creativity","Self-Acceptance","Helping Others","Hardship","Agency","Power","Revenge","Independence","Problem-Solving","Resourcefulness","Long-Term Thinking","Optimism","Humor","Love","The Five Senses","Tradition","Innovation","Hope","Dreams","Belonging","Travel","Overcoming","Trust","Morality","Happiness","Consciousness","Failure","Conflict","Cooperation","Growth","Loss","Celebration","Transformation","Scheming","Challenge","Planning","Wonder","Surprises","Conscience","Intelligence","Logic","Resilience"]}[LANGUAGE]
+topics = {"ja": ['話す動物', 'ファンタジー世界', 'タイムトラベル', '宇宙探査', '神秘的な生き物', '水中冒険', '恐竜', '海賊', 'スーパーヒーロー', 'おとぎ話', '外宇宙', '隠された宝物', '魔法の国', '魔法の森', '秘密結社', 'ロボットと技術', 'スポーツ', '学校生活', '休日', '文化的伝統', '魔法の物体', '失われた文明', '地下世界', '過去の時代', '透明化', '巨大な生物', 'ミニチュアの世界', 'エイリアンとの遭遇', '幽霊の出る場所', '変身', '島の冒険', '変わった乗り物', '潜入ミッション', '夢の世界', '仮想世界', '謎解き', '兄弟間の競争', '宝探し', '雪の冒険', '季節の変化', '謎の地図', '王国', '生きた物体', '庭園', '失われた都市', '芸術', '空'], "en": ['talking animals', 'fantasy worlds', 'time travel', 'space exploration', 'mystical creatures', 'underwater adventures', 'dinosaurs', 'pirates', 'superheroes', 'fairy tales', 'outer space', 'hidden treasures', 'magical lands', 'enchanted forests', 'secret societies', 'robots and technology', 'sports', 'school life', 'holidays', 'cultural traditions', 'magical objects', 'lost civilizations', 'subterranean worlds', 'bygone eras', 'invisibility', 'giant creatures', 'miniature worlds', 'alien encounters', 'haunted places', 'shape-shifting', 'island adventures', 'unusual vehicles', 'undercover missions', 'dream worlds', 'virtual worlds', 'riddles', 'sibling rivalry', 'treasure hunts', 'snowy adventures', 'seasonal changes', 'mysterious maps', 'royal kingdoms', 'living objects', 'gardens', 'lost cities', 'the arts', 'the sky']}[LANGUAGE]
+styles = {"ja": ['気まぐれな', '遊び心のある', '壮大な', 'おとぎ話風の', '現代的な', '古典的な', '叙情的な', '神話的な', '軽快な', '冒険的な', '心温まる', 'ユーモラスな', '神秘的な', 'アクション満載の', '寓話風の', '超現実的な', '哲学的な', '哀愁漂う', 'ノワール', 'ロマンチックな', '悲劇的な', 'ミニマリストの', 'サスペンスフルな'], "en": ['whimsical', 'playful', 'epic', 'fairy tale-like', 'modern', 'classic', 'lyric', 'mythological', 'lighthearted', 'adventurous', 'heartwarming', 'humorous', 'mystical', 'action-packed', 'fable-like', 'surreal', 'philosophical', 'melancholic', 'noir', 'romantic', 'tragic', 'minimalist', 'suspenseful']}[LANGUAGE]
+features = {"ja": ["対話", "道徳的教訓", "どんでん返しの結末", "伏線", "アイロニー", "内面の独白", "象徴主義", "マクガフィン", "非線形のタイムライン", "フラッシュバック", "入れ子構造", "物語の中の物語", "複数の視点", "チェーホフの銃", "第四の壁", "クリフハンガー", "アンチヒーロー", "対比", "クライマックス構造"], "en": ["dialogue", "a moral lesson", "a twist ending", "foreshadowing", "irony", "inner monologue", "symbolism", "a MacGuffin", "a non-linear timeline", "a flashback", "a nested structure", "a story within a story", "multiple perspectives", "Checkhov's gun", "the fourth wall", "a cliffhanger", "an anti-hero", "juxtaposition", "climactic structure"]}[LANGUAGE]
+grammars = {"ja": ["現在形", "過去形", "進行形", "完了形", "受身形", "使役形", "可能形", "意向形", "仮定形", "命令形", "テ形", "タ形", "ナイ形", "条件形", "尊敬語", "謙譲語", "丁寧語", "授受表現", "は・がの使い分け", "を・にの使い分け", "助詞", "副詞", "形容詞の活用", "形容動詞", "名詞修飾", "接続詞", "補助動詞", "数量詞の使い方", "疑問詞", "間接疑問", "重文", "複文", "話し言葉の省略"], "en": ["present tense","past tense","future tense","progressive aspect","perfect aspect","passive voice","conditional mood","imperative mood","indicative mood","relative clauses","prepositional phrases","indirect speech","exclamative sentences","comparative forms","superlative forms","subordinate clauses","ellipsis","anaphora","cataphora","wh-questions","yes-no questions","gerunds","participle phrases","inverted sentences","non-finite clauses","determiners","quantifiers","adjective order","parallel structure","discourse markers","appositive phrases"]}[LANGUAGE]
 
 def get_random_params():
     grammar = random.choice(grammars)
@@ -58,7 +60,7 @@ def iterate_params(seed=42):
             "num_paragraphs": 1+(k%9),
         }
             
-def create_simple_story_prompt(params):
+def create_simple_story_prompt_en(params):
     num_stories_per_completion = MAX_STORIES_PER_COMPLETION // max(3, params['num_paragraphs'])
 
     singular = params['num_paragraphs'] == 1
@@ -76,6 +78,28 @@ def create_simple_story_prompt(params):
 
     prompt = template.format(**params)
     return prompt, num_stories_per_completion
+
+def create_simple_story_prompt_ja(params):
+    num_stories_per_completion = MAX_STORIES_PER_COMPLETION // max(3, params['num_paragraphs'])
+
+    num_chars = params["num_graph"] * 100
+    singular = params['num_stories'] == 1
+    template_singular = f"非常に簡単な単語を使用して、子供でも分かるような約{num_chars}文字の物語を書いてください。\n物語は"
+    template_plural = f"非常に簡単な単語を使用して、子供でも理解できるような約{num_chars}文字の物語を{num_stories_per_completion}個書いてください。各物語に番号やタイトルをつけないでください。テーマを十分に探求して物語に多様性を持たせつつ、各物語は独立したものであるべきです。物語それぞれは{END_STRING}という言葉で区切ってください。\n各物語は"
+    template = "{theme}が話題になり、{topic}の話を含めば良いです。文体は{style}で、なるべく{feature}を利用してください.{grammar} 固有名詞を使う場合は、スペースで区切られた一般的な単語で組み立てるが良い。キャラクターに名前を付けないか以下の名前から選んでくださいー恭子、まりや、そうすけ、あかり、太郎、智史、夏目、石川、田中、坂口、トム、エマ。複雑なストリー構造を使っても構いませんが、必ずしも簡単な言葉のみを使用してください。"
+    if singular:
+        template = template_singular + template
+    else:
+        template = template_plural + template
+    
+    params = params.copy()
+    if params['grammar']:
+        params['grammar'] = f"わかりやすくて魅力的な物語を書くことが最優先ですが、出来れば自然と{params['grammar']}の使いかたを織り込んで下さい。"
+
+    prompt = template.format(**params)
+    return prompt, num_stories_per_completion
+
+create_simple_story_prompt = {x.split("_")[-1]:locals()[x] for x in locals() if x[:26] == "create_simple_story_prompt"}[LANGUAGE]
 
 def generate_content(gen_model, prompt):
     assert "gpt" in gen_model or "claude" in gen_model, "Invalid model name"

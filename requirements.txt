@@ -3,3 +3,4 @@ openai
 anthropic
 nltk
 textstat
+pandas
