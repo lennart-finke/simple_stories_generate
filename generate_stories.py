@@ -19,61 +19,8 @@ class RateLimitException(Exception):
     pass
 
 
-themes = {"ja": ["自尊心","立身出世","わびさび","悲しみ","怒り","ワクワク","おしゃれ","企画","画策","怖さ","友情","勇気","親切","幸せ","想像力","家族","嘘","好奇心","恋愛","チームワーク","責任","戦略たて","魔法","発見","裏切り","欺瞞","寛大さ","創造性","困難","自立","権力","復讐","独立","問題解決","長期的思考","楽観主義","ユーモア","愛","五感","伝統","革新","希望","夢","帰属意識","旅行","克服","信頼","道徳","意識","失敗","対立","協力","成長","喪失","祝福","変容","計略","挑戦","計画","驚き","良心","賢さ","推理"], "en": ["Friendship","Courage","Coming of age", "Kindness","Adventure","Imagination","Family","Perseverance","Curiosity","Honesty","Romance","Teamwork","Responsibility","Strategy","Magic","Discovery","Betrayal","Deception","Generosity","Creativity","Self-Acceptance","Helping Others","Hardship","Agency","Power","Revenge","Independence","Problem-Solving","Resourcefulness","Long-Term Thinking","Optimism","Humor","Love","The Five Senses","Tradition","Innovation","Hope","Dreams","Belonging","Travel","Overcoming","Trust","Morality","Happiness","Consciousness","Failure","Conflict","Cooperation","Growth","Loss","Celebration","Transformation","Scheming","Challenge","Planning","Wonder","Surprises","Conscience","Intelligence","Logic","Resilience"]}[LANGUAGE]
-topics = {"ja": [
-    "平安時代での冒険",
-    "温泉旅行",
-    "江戸の生活",
-    "明治維新",
-    "忍びと侍",
-    "夏の祭り",
-    "上京",
-    "怪談話",
-    "日常生活",
-    "お化け話",
-    "縄文時代",
-    "バブル時代",
-    "話す動物たち",
-    "異世界",
-    "時間旅行",
-    "宇宙探検",
-    "神秘的な生き物たち",
-    "水中の冒険",
-    "恐竜の時代",
-    "海賊の物語",
-    "ヒーローの伝説",
-    "昔話",
-    "未知の宇宙",
-    "隠された財宝",
-    "魔法の国",
-    "不思議な森",
-    "秘密の組織",
-    "ロボットと未来技術",
-    "体育と競技",
-    "学校生活のドラマ",
-    "休日の冒険",
-    "魔法の道具",
-    "滅んでいた文明",
-    "地下の世界",
-    "過去の時代への旅",
-    "巨大な生物",
-    "小さな世界",
-    "宇宙人との出会い",
-    "孤島の冒険",
-    "奇妙な乗り物",
-    "夢の世界",
-    "仮想空間",
-    "探偵と謎解き",
-    "兄弟の競争",
-    "宝探し",
-    "雪国への旅",
-    "季節の移り変わり",
-    "謎の地図",
-    "王国の物語",
-    "庭園の秘密",
-    "芸術",
-    "大空"
-  ], "en": ['talking animals', 'fantasy worlds', 'time travel', 'space exploration', 'mystical creatures', 'underwater adventures', 'dinosaurs', 'pirates', 'superheroes', 'fairy tales', 'outer space', 'hidden treasures', 'magical lands', 'enchanted forests', 'secret societies', 'robots and technology', 'sports', 'school life', 'holidays', 'cultural traditions', 'magical objects', 'lost civilizations', 'subterranean worlds', 'bygone eras', 'invisibility', 'giant creatures', 'miniature worlds', 'alien encounters', 'haunted places', 'shape-shifting', 'island adventures', 'unusual vehicles', 'undercover missions', 'dream worlds', 'virtual worlds', 'riddles', 'sibling rivalry', 'treasure hunts', 'snowy adventures', 'seasonal changes', 'mysterious maps', 'royal kingdoms', 'living objects', 'gardens', 'lost cities', 'the arts', 'the sky']}[LANGUAGE]
+themes = {"ja": ["自尊心", "立身出世", "わびさび", "悲しみ", "怒り", "ワクワク", "おしゃれ", "企画", "画策", "怖さ", "友情", "勇気", "親切", "幸せ", "想像力", "家族", "嘘", "好奇心", "恋愛", "チームワーク", "責任", "戦略たて", "魔法", "発見", "裏切り", "欺瞞", "寛大さ", "創造性", "困難", "自立", "権力", "復讐", "独立", "問題解決", "長期的思考", "楽観主義", "ユーモア", "愛", "五感", "伝統", "革新", "希望", "夢", "帰属意識", "旅行", "克服", "信頼", "道徳", "意識", "失敗", "対立", "協力", "成長", "喪失", "祝福", "変容", "計略", "挑戦", "計画", "驚き", "良心", "賢さ", "推理"], "en": ["Friendship", "Courage", "Coming of age", "Kindness", "Adventure", "Imagination", "Family", "Perseverance", "Curiosity", "Honesty", "Romance", "Teamwork", "Responsibility", "Strategy", "Magic", "Discovery", "Betrayal", "Deception", "Generosity", "Creativity", "Self-Acceptance", "Helping Others", "Hardship", "Agency", "Power", "Revenge", "Independence", "Problem-Solving", "Resourcefulness", "Long-Term Thinking", "Optimism", "Humor", "Love", "The Five Senses", "Tradition", "Innovation", "Hope", "Dreams", "Belonging", "Travel", "Overcoming", "Trust", "Morality", "Happiness", "Consciousness", "Failure", "Conflict", "Cooperation", "Growth", "Loss", "Celebration", "Transformation", "Scheming", "Challenge", "Planning", "Wonder", "Surprises", "Conscience", "Intelligence", "Logic", "Resilience"]}[LANGUAGE]
+topics = {"ja": ["平安時代での冒険", "温泉旅行", "江戸の生活", "明治維新", "忍びと侍", "夏の祭り", "上京", "怪談話", "日常生活", "お化け話", "縄文時代", "バブル時代", "話す動物たち", "異世界", "時間旅行", "宇宙探検", "神秘的な生き物たち", "水中の冒険", "恐竜の時代", "海賊の物語", "ヒーローの伝説", "昔話", "未知の宇宙", "隠された財宝", "魔法の国", "不思議な森", "秘密の組織", "ロボットと未来技術", "体育と競技", "学校生活のドラマ", "休日の冒険", "魔法の道具", "滅んでいた文明", "地下の世界", "過去の時代への旅", "巨大な生物", "小さな世界", "宇宙人との出会い", "孤島の冒険", "奇妙な乗り物", "夢の世界", "仮想空間", "探偵と謎解き", "兄弟の競争", "宝探し", "雪国への旅", "季節の移り変わり", "謎の地図", "王国の物語", "庭園の秘密", "芸術", "大空"], "en": ['talking animals',  'fantasy worlds',  'time travel',  'space exploration',  'mystical creatures',  'underwater adventures',  'dinosaurs',  'pirates',  'superheroes',  'fairy tales',  'outer space',  'hidden treasures',  'magical lands',  'enchanted forests',  'secret societies',  'robots and technology',  'sports',  'school life',  'holidays',  'cultural traditions',  'magical objects',  'lost civilizations',  'subterranean worlds',  'bygone eras',  'invisibility',  'giant creatures',  'miniature worlds',  'alien encounters',  'haunted places',  'shape-shifting',  'island adventures',  'unusual vehicles',  'undercover missions',  'dream worlds',  'virtual worlds',  'riddles',  'sibling rivalry',  'treasure hunts',  'snowy adventures',  'seasonal changes',  'mysterious maps',  'royal kingdoms',  'living objects',  'gardens',  'lost cities',  'the arts',  'the sky']}[LANGUAGE]
 styles = {"ja": ['気まぐれな', '遊び心のある', '壮大な', 'おとぎ話風のような', '現代的な', '古典的な', '叙情的な', '神話的な', '軽快な', '冒険的な', '心温まる', '神秘的な', 'アクション満載の', '寓話風の', '超現実的な', '哲学的な', '哀愁漂う', 'ロマンチックな', '悲劇的な', 'ミニマリストな', 'サスペンスフルな'], "en": ['whimsical', 'playful', 'epic', 'fairy tale-like', 'modern', 'classic', 'lyric', 'mythological', 'lighthearted', 'adventurous', 'heartwarming', 'humorous', 'mystical', 'action-packed', 'fable-like', 'surreal', 'philosophical', 'melancholic', 'noir', 'romantic', 'tragic', 'minimalist', 'suspenseful']}[LANGUAGE]
 features = {"ja": ["対話", "道徳的教訓", "どんでん返しの結末", "伏線", "皮肉", "内面の独白", "象徴主義", "マクガフィン", "非線形のタイムライン", "フラッシュバック", "入れ子構造", "物語の中の物語", "複数の視点", "チェーホフの銃", "第四の壁", "クリフハンガー", "アンチヒーロー", "対比", "クライマックス構造"], "en": ["dialogue", "a moral lesson", "a twist ending", "foreshadowing", "irony", "inner monologue", "symbolism", "a MacGuffin", "a non-linear timeline", "a flashback", "a nested structure", "a story within a story", "multiple perspectives", "Checkhov's gun", "the fourth wall", "a cliffhanger", "an anti-hero", "juxtaposition", "climactic structure"]}[LANGUAGE]
 grammars = {"ja": ["現在形", "過去形", "進行形", "完了形", "受身形", "使役形", "可能形", "意向形", "仮定形", "命令形", "テ形", "タ形", "ナイ形", "条件形", "尊敬語", "謙譲語", "丁寧語", "授受表現", "は・がの使い分け", "を・にの使い分け", "助詞", "副詞", "形容詞の活用", "形容動詞", "名詞修飾", "接続詞", "補助動詞", "数量詞の使い方", "疑問詞", "間接疑問", "重文", "複文", "話し言葉の省略"], "en": ["present tense","past tense","future tense","progressive aspect","perfect aspect","passive voice","conditional mood","imperative mood","indicative mood","relative clauses","prepositional phrases","indirect speech","exclamative sentences","comparative forms","superlative forms","subordinate clauses","ellipsis","anaphora","cataphora","wh-questions","yes-no questions","gerunds","participle phrases","inverted sentences","non-finite clauses","determiners","quantifiers","adjective order","parallel structure","discourse markers","appositive phrases"]}[LANGUAGE]
