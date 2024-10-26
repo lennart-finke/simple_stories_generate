@@ -36,7 +36,7 @@ from tokenizers import (
 from tokenizers.pre_tokenizers import PreTokenizer
 
 #NOTE: this function from https://github.com/noanabeshima/tiny_tokenizer/tree/main
-single_character_toks = re.compile(r'[ ,."\'0-9?!()\n-]')
+single_character_toks = re.compile(r'[ ,—\*;:\."\'0-9?!\(\)\n-]')
 
 def word_tokenize(text, known_toks=None, add_bos=True):
     """The function used for pre-tokenization."""
@@ -121,6 +121,8 @@ def make_tokenizer(vocab_files):
             normalizers.Replace("“", '"'),
             normalizers.Replace("”", '"'),
             normalizers.Replace("’", "'"),
+            normalizers.Replace("‘", "'"),
+            normalizers.Replace("–", "—"),
             normalizers.NFKD(),
             normalizers.Lowercase(),
             normalizers.StripAccents(),
