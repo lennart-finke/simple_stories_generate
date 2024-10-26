@@ -268,16 +268,16 @@ def main(num_completions: int, num_threads: int = 20, model = "gpt-4o-mini"):
     #     print(param)
 
     # Generate regular simple stories
-    # with concurrent.futures.ThreadPoolExecutor(max_workers=num_threads) as executor:
-    #     future_to_story = {
-    #         executor.submit(worker_thread, model, get_random_params(), formatted_time): i for i in range(num_completions)
-    #     }
+    with concurrent.futures.ThreadPoolExecutor(max_workers=num_threads) as executor:
+        future_to_story = {
+            executor.submit(worker_thread, model, get_random_params(), formatted_time): i for i in range(num_completions)
+        }
 
-    #     for future in tqdm(concurrent.futures.as_completed(future_to_story), total=num_completions, desc="Generating stories"):
-    #         try:
-    #             data = future.result()
-    #         except Exception as e:
-    #             print(f"Story generation failed with exception: {e}")
+        for future in tqdm(concurrent.futures.as_completed(future_to_story), total=num_completions, desc="Generating stories"):
+            try:
+                data = future.result()
+            except Exception as e:
+                print(f"Story generation failed with exception: {e}")
 
 # Reference models: ["gpt-4o", "gpt-4o-mini", "claude-sonnet-3.5-20240620"]
 if __name__ == '__main__':
