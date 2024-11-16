@@ -11,7 +11,7 @@ from tqdm import tqdm
 from datetime import datetime
 import textwrap
 
-MAX_STORIES_PER_COMPLETION = 40
+MAX_STORIES_PER_COMPLETION = 36
 END_STRING = "THE END."
 
 class RateLimitException(Exception):
@@ -146,7 +146,7 @@ def create_simple_story_prompt(params):
 def generate_content(gen_model, prompt):
     assert "gpt" in gen_model or "claude" in gen_model, "Invalid model name"
     if "gpt" in gen_model:  # OpenAI
-        client = OpenAI(api_key=os.environ["OPENAI_API_KEY"])
+        client = OpenAI(api_key=os.environ["OPENAI_API_KEY_SIMPLESTORIES"])
         completion = client.chat.completions.create(
             model=gen_model,
             top_p=0.7,
