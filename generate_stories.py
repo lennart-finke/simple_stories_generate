@@ -11,30 +11,13 @@ from tqdm import tqdm
 from datetime import datetime
 import textwrap
 
-MAX_STORIES_PER_COMPLETION = 36
-END_STRING = "THE END."
+from text_data import themes, topics, styles, features, word_types, grammars, personas, letter_frequencies, LANGUAGE, END_STRING
+
+MAX_STORIES_PER_COMPLETION = 30
 
 class RateLimitException(Exception):
     pass
 
-
-themes = {"en": ["Friendship", "Courage", "Contradiction", "Coming of age", "Kindness", "Amnesia", "Adventure", "Imagination", "Family", "Perseverance", "Curiosity", "Honesty", "Romance", "Teamwork", "Responsibility", "Strategy", "Magic", "Discovery", "Betrayal", "Deception", "Generosity", "Creativity", "Self-Acceptance", "Helping Others", "Hardship", "Agency", "Power", "Revenge", "Independence", "Problem-Solving", "Resourcefulness", "Long-Term Thinking", "Optimism", "Humor", "Love", "The Five Senses", "Tradition", "Innovation", "Hope", "Dreams", "Belonging", "Travel", "Overcoming", "Trust", "Morality", "Happiness", "Consciousness", "Failure", "Conflict", "Cooperation", "Growth", "Loss", "Celebration", "Transformation", "Scheming", "Challenge", "Planning", "Wonder", "Surprises", "Conscience", "Intelligence", "Logic", "Resilience"]}["en"]
-topics = {"en": ["talking animals", "fantasy worlds", "time travel", "a deadline or time limit", "space exploration", "mystical creatures", "underwater adventures", "dinosaurs", "pirates", "superheroes", "fairy tales", "outer space", "hidden treasures", "magical lands", "enchanted forests", "secret societies", "robots and technology", "sports", "school life", "holidays", "cultural traditions", "magical objects", "lost civilizations", "subterranean worlds", "bygone eras", "invisibility", "giant creatures", "miniature worlds", "alien encounters", "haunted places", "shape-shifting", "island adventures", "unusual vehicles", "undercover missions", "dream worlds", "virtual worlds", "riddles", "sibling rivalry", "treasure hunts", "snowy adventures", "seasonal changes", "mysterious maps", "royal kingdoms", "living objects", "gardens", "lost cities", "the arts", "the sky"]}["en"]
-styles = {"en": ["whimsical", "playful", "epic", "fairy tale-like", "modern", "classic", "lyric", "mythological", "lighthearted", "adventurous", "heartwarming", "humorous", "mystical", "action-packed", "fable-like", "surreal", "philosophical", "melancholic", "noir", "romantic", "tragic", "minimalist", "suspenseful"]}["en"]
-features = {"en": ["dialogue", "in medias res", "a moral lesson", "absence indicating a presence", "a story told through letters", "a twist ending", "an unrealiable narrater", "foreshadowing", "irony", "inner monologue", "symbolism", "a MacGuffin", "a non-linear timeline", "a reverse timeline", "circular narrative structure", "a flashback", "a nested structure", "a story within a story", "a Red Herring", "multiple perspectives", "Checkhov's gun", "the fourth wall", "a cliffhanger", "an anti-hero", "juxtaposition", "climactic structure"]}["en"]
-grammars = {"en": ["present tense", "past tense", "future tense", "progressive aspect", "perfect aspect", "passive voice", "conditional mood", "imperative mood", "indicative mood", "relative clauses", "prepositional phrases", "indirect speech", "exclamative sentences", "comparative forms", "superlative forms", "subordinate clauses", "ellipsis", "anaphora", "cataphora", "wh-questions", "yes-no questions", "gerunds", "participle phrases", "inverted sentences", "non-finite clauses", "determiners", "quantifiers", "adjective order", "parallel structure", "discourse markers", "appositive phrases"]}["en"]
-personas = {"en": ["an explorer archetype", "a rebellious author", "a powerful leader", "a wise, old person who wants to teach the young", "an innocent author", "a moralistic teacher", "a hopeless romantic", "a hurt, ill-intentioned person", "an academic", "a jester archetype", "a poet", "a philosopher", "a mother", "a father", "someone curious", "someone evil", "someone who wants to prove a point", "a child", "a pedant", "the everyman", "the oppressed", "a cruel person", "someone who loves order and structure"]}["en"]
-word_types = {"en": ["a noun", "an adjective", "an adverb", "a preposition"]}["en"]
-
-# Below is copied from https://en.wikipedia.org/wiki/Letter_frequency and cross-checked with http://norvig.com/mayzner.html. 
-letter_frequencies = {"en": {
-        'A': 11.7, 'B': 4.4, 'C': 5.2, 'D': 3.2, 'E': 2.8,
-        'F': 4.0, 'G': 1.6, 'H': 4.2, 'I': 7.3, 'J': 0.51,
-        'K': 0.86, 'L': 2.4, 'M': 3.8, 'N': 2.3, 'O': 7.6,
-        'P': 4.3, 'Q': 0.22, 'R': 2.8, 'S': 6.7, 'T': 16.0,
-        'U': 1.2, 'V': 0.82, 'W': 5.5, 'X': 0.045, 'Y': 0.76,
-        'Z': 0.045
-}}["en"]
 
 def get_random_params():
     letters = list(letter_frequencies.keys())
@@ -73,23 +56,24 @@ def iterate_params(seed=42):
     random.shuffle(letter_pool)
 
     # Generate all combinations of the non-letter parameters and shuffle
-    combinations = list(itertools.product(themes, topics, styles, features, word_types))
+    combinations = list(itertools.product(themes, styles, features, word_types))
     print(f"Using {len(combinations)} combinations...")
     random.shuffle(combinations)
     
-    print(len(grammars), len(personas))
-    assert(len(grammars) % 2 != 0), "Number of grammars should be odd"
-    assert(len(personas) % 3 != 0), "Number of personas should not be divisible by 3"
+    assert len(grammars) % 2 != 0, "Number of grammars should be odd"
+    assert len(personas) % 3 != 0, "Number of personas should not be divisible by 3"
+    assert len(topics) % 2 != 0 and len(topics) % 3 != 0
 
-    for k, combination in enumerate(combinations):
-        theme, topic, style, feature, word_type = combination
+    k = 0
+    while True:
+        theme, style, feature, word_type = combinations[k % len(combinations)]
         random_letter = letter_pool[k % len(letter_pool)]  # Cycle through shuffled letter pool
         
         # Grammar and persona are set to empty strings half, and a third of the time respectively
         grammar = grammars[k % len(grammars)] if k % 2 == 0 else ""
         persona = personas[k % len(personas)] if k % 3 == 0 else ""
-        
-        # Yield each combination with the desired parameters
+        topic = topics[k % len(topics)]
+
         yield {
             "theme": theme,
             "topic": topic,
@@ -101,47 +85,65 @@ def iterate_params(seed=42):
             "initial_word_type": word_type,
             "num_paragraphs": 1 + (k % 9),
         }
+        k += 1
 
 def create_simple_story_prompt(params):
     num_stories_per_completion = MAX_STORIES_PER_COMPLETION // max(3, params['num_paragraphs'])
-
     singular = params['num_paragraphs'] == 1
-    template_singular = textwrap.dedent(f"""\
-        Write a short story ({params['num_paragraphs']} paragraphs) using very basic words.
-        The story """)
-    template_plural = textwrap.dedent(f"""\
-        Write {num_stories_per_completion} short stories ({params['num_paragraphs']} 
-        paragraph{'' if singular else 's'} each) using very basic words. Do not number
-        each story or write a headline. Make the stories diverse by fully exploring the
-        theme, but each story should be self-contained. 
-        Separate the stories by putting {END_STRING} in between. Make the stories as 
-        qualitatively distinct to each other as possible. In particular, never start two
-        stories the same way!
-        Each story """)
-    template = textwrap.dedent("""\
-        should be about {theme}, include {topic}, be {style} in its writing style and 
-        ideally feature {feature}.{grammar}{persona} If you need to use proper names, 
-        make them from space-separated common words. Either don't give characters a name, 
-        or select from Mia, Alex, Jean, Samuel, Lily, Leo, Jose, Kim, Alice, Lena, Rita, 
-        Emmanuel, Anne, Peter, Maria or Luis. Complex story structure is great, but 
-        please remember to only use very simple words! If you can, start the story
-        with {initial_word_type} that begins with the letter {initial_letter}.""")
-    if singular:
-        template = template_singular + template
-    else:
-        template = template_plural + template
-    
-    params = params.copy()
-    if params['grammar']:
-        params['grammar'] = textwrap.dedent(f"""\
-            The most important thing is to write an engaging easy story, but where it 
-            makes sense, demonstrate the use of {params['grammar']}.""")
-    if params['persona']:
-        params['persona'] = f" Write from the perspective of {params['persona']}."
+
+    if LANGUAGE == "en":
+        template_singular = textwrap.dedent(f"""\
+            Write a short story ({params['num_paragraphs']} paragraphs) using very basic words.
+            The story """)
+        template_plural = textwrap.dedent(f"""\
+            Write {num_stories_per_completion} short stories ({params['num_paragraphs']} 
+            paragraph{'' if singular else 's'} each) using very basic words. Do not number
+            each story or write a headline. Make the stories diverse by fully exploring the
+            theme, but each story should be self-contained. 
+            Separate the stories by putting {END_STRING} in between. Make the stories as 
+            qualitatively distinct to each other as possible. In particular, never start two
+            stories the same way!
+            Each story """)
+        template = textwrap.dedent("""\
+            should be about {theme}, include {topic}, be {style} in its writing style and 
+            ideally feature {feature}.{grammar}{persona} If you need to use proper names, 
+            make them from space-separated common words. Either don't give characters a name, 
+            or select from Mia, Alex, Jean, Samuel, Lily, Leo, Jose, Kim, Alice, Lena, Rita, 
+            Emmanuel, Anne, Peter, Maria or Luis. Complex story structure is great, but 
+            please remember to only use very simple words! If you can, start the story
+            with {initial_word_type} that begins with the letter {initial_letter}.""")
+        if singular:
+            template = template_singular + template
+        else:
+            template = template_plural + template
+        
+        params = params.copy()
+        if params['grammar']:
+            params['grammar'] = textwrap.dedent(f"""\
+                The most important thing is to write an engaging easy story, but where it 
+                makes sense, demonstrate the use of {params['grammar']}.""")
+        if params['persona']:
+            params['persona'] = f" Write from the perspective of {params['persona']}."
+    elif LANGUAGE == "ja":
+        num_chars = params["num_paragraphs"] * 100
+        singular = num_stories_per_completion == 1
+        template_singular = f"非常に簡単な単語を使用して、子供でも分かるような約{num_chars}文字の物語を書いてください。"
+        template_plural = f"非常に簡単な単語を使用して、子供でも理解できるような約{num_chars}文字の物語を{num_stories_per_completion}個書いてください。各物語に番号やタイトルをつけないでください。テーマを十分に探求し、物語に多様性を持たせつつ、各物語は独立したものであるべきです。物語それぞれは{END_STRING}という言葉で区切ってください。"
+        template = "「{theme}」が話題となっていて、{topic}について書けば良いです。{style}文体で、なるべく{feature}を利用してください。固有名詞を使う場合は、スペースで区切られた一般的な単語で組み立てるが良い。登場人物に名前を付けないか、以下の名前から選んでください。恭子、まりや、そうすけ、あかり、はやと、れいな、佐藤、なつほ、えみり、智也、太郎、智史、夏目、石川、坂口、田中。難しい漢字を使わず、簡単な言葉のみを使用してください。できれば{initial_word_type}で始め、その言葉は「{initial_letter}」と読む文字から始まるようにしてください。"
+        if singular:
+            template = template_singular + template
+        else:
+            template = template_plural + template
+        
+        params = params.copy()
+        if params['grammar']:
+            params['grammar'] = f"わかりやすくて魅力的な物語を書くことが最優先ですが、できれば自然と{params['grammar']}という文型も織り込んで下さい。"
+        if params['persona']:
+            params['persona'] = f"{params['persona']}の視点で書いてください。"
 
     prompt = template.format(**params)
-    prompt.replace("\n", "")
     return prompt, num_stories_per_completion
+
 
 def generate_content(gen_model, prompt):
     assert "gpt" in gen_model or "claude" in gen_model, "Invalid model name"
@@ -203,10 +205,10 @@ def generate_simple_story(gen_model, params: dict):
 
 def generate_and_log_simple_stories(gen_model: str, params: dict, formatted_time: str):
     json_struct = generate_simple_story(gen_model, params)
-    lines = [json.dumps(item) for item in json_struct if 'story' in item]
+    lines = [json.dumps(item, ensure_ascii=False) for item in json_struct if 'story' in item]
     
     filename = f'data/stories-{gen_model}-{formatted_time}.jsonl'
-    with open(filename, "a") as f:
+    with open(filename, "a", encoding="utf-8") as f:
         f.write("\n".join(lines) + "\n")
 
 def worker_thread(gen_model: str, params: dict, formatted_time: str):
@@ -243,5 +245,5 @@ if __name__ == '__main__':
     i = iterate_params()
     print(next(i))
     print(next(i))
-    #NUM_COMPLETIONS = 200
+    NUM_COMPLETIONS = 2
     #main(NUM_COMPLETIONS, num_threads=40, model="gpt-4o-mini")
